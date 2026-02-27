@@ -1,0 +1,5 @@
+.main { padding: 16px; }
+.board { display:flex; gap:16px; align-items:flex-start; }
+.column { background: #fff; padding:12px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); min-width:220px; }
+.colTitle { margin:0 0 8px 0; font-size:14px }
+.card { background:#f9fafb; padding:8px; border-radius:6px; margin-bottom:8px }

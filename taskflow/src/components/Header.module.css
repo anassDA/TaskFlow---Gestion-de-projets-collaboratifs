@@ -1,0 +1,27 @@
+.header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: #18BC3E;
+  color: white;
+}
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.menuBtn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+.logo { font-size: 18px; margin: 0; }
+.avatar {
+  background: rgba(255,255,255,0.16);
+  padding: 6px 10px;
+  border-radius: 6px;
+}

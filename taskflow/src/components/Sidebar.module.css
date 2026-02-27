@@ -1,0 +1,13 @@
+.sidebar {
+  width: 240px;
+  border-right: 1px solid #e5e7eb;
+  padding: 16px;
+  background: #fff;
+  transition: margin-left 0.25s ease, opacity 0.25s ease;
+}
+.closed { margin-left: -260px; opacity: 0; }
+.open { margin-left: 0; opacity: 1; }
+.title { margin: 0 0 12px 0; font-size: 16px; }
+.list { list-style: none; padding: 0; margin: 0; }
+.item { display:flex; align-items:center; gap:8px; padding:6px 0; }
+.dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
