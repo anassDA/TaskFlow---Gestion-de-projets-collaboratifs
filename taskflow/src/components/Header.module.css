@@ -6,7 +6,6 @@
   padding: 0 16px;
   background: #1b8c3e;
   color: white;
-}
 .left {
   display: flex;
   align-items: center;
@@ -24,4 +23,30 @@
   background: rgba(255,255,255,0.16);
   padding: 6px 10px;
   border-radius: 6px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.userName {
+  font-weight: 500;
+  font-size: 16px;
+  margin-right: 8px;
+}
+.logoutBtn {
+  background: white;
+  color: #1b8c3e;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.logoutBtn:hover {
+  background: #e3eafc;
+}
 }

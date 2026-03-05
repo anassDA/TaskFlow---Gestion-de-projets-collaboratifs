@@ -1,57 +1,88 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from './features/useAuth';
+import Login from './features/Login';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
-import './index.css';
-
-interface Project { id: string; name: string; color: string }
-interface Column { id: string; title: string; tasks: string[] }
-
+interface Project { id: string; name: string; color: string; }
+interface Column { id: string; title: string; tasks: string[]; }
 export default function App() {
-	const [sidebarOpen, setSidebarOpen] = useState(true);
-	const [projects, setProjects] = useState<Project[]>([]);
-	const [columns, setColumns] = useState<Column[]>([]);
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				const [projRes, colRes] = await Promise.all([
-					fetch('http://localhost:4000/projects'),
-					fetch('http://localhost:4000/columns')
-				]);
-
-				if (!projRes.ok || !colRes.ok) {
-					console.error('HTTP error', projRes.status, colRes.status);
-				}
-
-				const projData = await projRes.json();
-				const colData = await colRes.json();
-
-				console.log('useEffect déclenché');
-				console.log('Projects:', projData);
-				console.log('Columns:', colData);
-
-				setProjects(projData);
-				setColumns(colData);
-			} catch (error) {
-				console.error('Erreur lors du fetch :', error);
-			} finally {
-				setLoading(false);
-			}
-		}
-		fetchData();
-	}, []); 
-
-	if (loading) return <div style={{ padding: '2rem' }}>Chargement...</div>;
-
-	return (
-		<div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-			<Header title="TaskFlow" onMenuClick={() => setSidebarOpen(s => !s)} />
-			<div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-				<Sidebar projects={projects} isOpen={sidebarOpen} />
-				<MainContent columns={columns} />
-			</div>
-		</div>
-	);
+ const { state: authState } = useAuth();
+ if (!authState.user) {
+ return <Login />;
+ }
+ return <Dashboard />;
+}
+function Dashboard() {
+ const { state: authState, dispatch } = useAuth();
+ const [sidebarOpen, setSidebarOpen] = useState(true);
+ const [projects, setProjects] = useState<Project[]>([]);
+ const [columns, setColumns] = useState<Column[]>([]);
+ const [loading, setLoading] = useState(true);
+ useEffect(() => {
+ async function fetchData() {
+ try {
+ const [p, co] = await Promise.all([
+ fetch('http://localhost:4000/projects'),
+ fetch('http://localhost:4000/columns'),
+ ]);
+ setProjects(await p.json());
+ setColumns(await co.json());
+ } catch (e) { console.error(e); }
+ finally { setLoading(false); }
+ }
+ fetchData();
+ }, []);
+ if (loading) return <div style={{padding:'2rem'}}>Chargement...</div>;
+ return (
+	 <div style={{
+		 display: 'flex',
+		 flexDirection: 'column',
+		 minHeight: '100vh',
+		 background: 'linear-gradient(120deg, #f8fafc 0%, #e3eafc 100%)',
+	 }}>
+		 <Header
+			 title="TaskFlow"
+			 onMenuClick={() => setSidebarOpen(p => !p)}
+			 userName={authState.user?.name}
+			 onLogout={() => dispatch({ type: 'LOGOUT' })}
+		 />
+		 <div style={{
+			 display: 'flex',
+			 flex: 1,
+			 overflow: 'hidden',
+			 justifyContent: 'center',
+			 alignItems: 'flex-start',
+			 padding: '2rem',
+			 gap: '2rem',
+		 }}>
+			 <div style={{
+				 minWidth: 220,
+				 maxWidth: 260,
+				 background: '#fff',
+				 borderRadius: '16px',
+				 boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+				 padding: '1.5rem 1rem',
+				 marginRight: '1rem',
+				 height: 'calc(100vh - 80px)',
+				 overflowY: 'auto',
+			 }}>
+				 <Sidebar projects={projects} isOpen={sidebarOpen} />
+			 </div>
+			 <div style={{
+				 flex: 1,
+				 background: '#fff',
+				 borderRadius: '16px',
+				 boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+				 padding: '2rem',
+				 minHeight: 'calc(100vh - 80px)',
+				 overflowY: 'auto',
+				 display: 'flex',
+				 gap: '2rem',
+			 }}>
+				 <MainContent columns={columns} />
+			 </div>
+		 </div>
+	 </div>
+ );
 }
