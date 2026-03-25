@@ -1,0 +1,21 @@
+Q1: On utilise <Navigate /> dans ProtectedRoute parce qu’on est dans le rendu (on retourne du JSX). navigate() sert plutôt dans un handler ou un useEffect.
+Q2:
+navigate(from): ajoute une entrée dans l’historique → bouton “Retour” peut revenir à /login.
+navigate(from, { replace: true }): remplace l’entrée courante → “Retour” ne revient pas à /login.
+Q3: Après POST, setProjects(prev => [...prev, data]) évite un re-GET (plus rapide, moins de requêtes) et on a déjà l’objet créé (data) renvoyé par l’API.
+Q4 (résultats attendus):
+a) /dashboard sans connexion → redirige /login
+b) /projects/1 sans connexion → redirige /login
+c) /nimportequoi → redirige /dashboard (puis /login si non connecté)
+d) / → redirige /dashboard (puis /login si non connecté)
+e) connecté puis “Retour” → ne revient pas au login si replace: true est appliqué.
+Q5:
+Link: lien simple.
+NavLink: lien + état actif (isActive) pour appliquer un style. Ici, c’est utile pour surligner le projet courant dans la sidebar.
+Q6 (ProjectForm POST vs PUT):
+POST: champs init vides (ou defaults), bouton “Créer”, callback appelle addProject.
+PUT: champs init = valeurs du projet, bouton “Modifier”, callback appelle renameProject / update.
+Q7: Si json-server est arrêté, un POST déclenche une erreur Axios → le message s’affiche si tu fais try/catch + setError(...) + rendu conditionnel de error.
+Q8:
+fetch: 404 ne jette pas d’erreur automatiquement → il faut tester response.ok.
+Axios: 404 (et tout status non-2xx) rejette la Promise → ça passe dans catch.

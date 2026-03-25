@@ -9,5 +9,50 @@
 .open { margin-left: 0; opacity: 1; }
 .title { margin: 0 0 12px 0; font-size: 16px; }
 .list { list-style: none; padding: 0; margin: 0; }
-.item { display:flex; align-items:center; gap:8px; padding:6px 0; }
+.list li {
+  margin-bottom: 6px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.active {
+  background: #dff5e6;
+  color: #157a33;
+  font-weight: 600;
+}
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.actionBtn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+}
+.actionBtn:hover {
+  background: #f3f4f6;
+}
 .dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
