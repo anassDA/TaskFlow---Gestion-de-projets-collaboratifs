@@ -6,11 +6,14 @@
   padding: 0 16px;
   background: #1b8c3e;
   color: white;
+}
+
 .left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
 .menuBtn {
   background: transparent;
   border: none;
@@ -18,6 +21,7 @@
   font-size: 20px;
   cursor: pointer;
 }
+
 .logo { font-size: 18px; margin: 0; }
 .avatar {
   background: rgba(255,255,255,0.16);
@@ -48,5 +52,4 @@
 }
 .logoutBtn:hover {
   background: #e3eafc;
-}
 }

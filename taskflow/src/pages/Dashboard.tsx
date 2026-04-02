@@ -1,126 +1,22 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useAuth } from '../features/useAuth';
-import api from '../api/axios';
-import Header from '../components/Header';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from '../store';
+import { logout } from '../features/auth/authSlice';
 import Sidebar from '../components/Sidebar';
 import MainContent from '../components/MainContent';
 import ProjectForm from '../components/ProjectForm';
 import styles from './Dashboard.module.css';
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-}
-
-interface Column {
-  id: string;
-  title: string;
-  tasks: string[];
-}
+  import HeaderMUI from '../components/HeaderMUI';
+import useProjects from '../hooks/useProjects';
+// DOMPurify was used for the XSS demo; demo removed so no import needed.
 
 export default function Dashboard() {
-  const { state: authState, dispatch } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
+  const authState = useSelector((s: RootState) => s.auth);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [columns, setColumns] = useState<Column[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
-  // GET — charger les données au montage
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [projRes, colRes] = await Promise.all([
-          api.get('/projects'),
-          api.get('/columns'),
-        ]);
-
-        setProjects(projRes.data);
-        setColumns(colRes.data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  // POST — ajouter un projet
-  async function addProject(name: string, color: string) {
-    setSaving(true);
-    setError(null);
-    try {
-      const { data } = await api.post('/projects', { name, color });
-      setProjects(prev => [...prev, data]);
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        setError(e.response?.data?.message || `Erreur ${e.response?.status ?? ''}`.trim());
-      } else {
-        setError('Erreur inconnue');
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  // PUT — renommer un projet
-  async function renameProject(project: Project) {
-    const newName = prompt('Nouveau nom :', project.name);
-
-    if (!newName || newName.trim() === '' || newName.trim() === project.name) {
-      return;
-    }
-
-    setSaving(true);
-    setError(null);
-    try {
-      const { data } = await api.put('/projects/' + project.id, {
-        ...project,
-        name: newName.trim(),
-      });
-
-      setProjects(prev =>
-        prev.map(p => (p.id === project.id ? data : p))
-      );
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        setError(e.response?.data?.message || `Erreur ${e.response?.status ?? ''}`.trim());
-      } else {
-        setError('Erreur inconnue');
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  // DELETE — supprimer un projet
-  async function deleteProject(id: string) {
-    const ok = confirm('Êtes-vous sûr ?');
-
-    if (!ok) return;
-
-    setSaving(true);
-    setError(null);
-    try {
-      await api.delete('/projects/' + id);
-
-      setProjects(prev => prev.filter(p => p.id !== id));
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        setError(e.response?.data?.message || `Erreur ${e.response?.status ?? ''}`.trim());
-      } else {
-        setError('Erreur inconnue');
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
+  const { projects, columns, loading, error, addProject, renameProject, deleteProject } = useProjects();
 
   if (loading) {
     return <div className={styles.loading}>Chargement...</div>;
@@ -128,11 +24,11 @@ export default function Dashboard() {
 
   return (
     <div className={styles.layout}>
-      <Header
+      <HeaderMUI
         title="TaskFlow"
         onMenuClick={() => setSidebarOpen(p => !p)}
         userName={authState.user?.name}
-        onLogout={() => dispatch({ type: 'LOGOUT' })}
+        onLogout={() => dispatch(logout())}
       />
 
       <div className={styles.body}>
@@ -146,18 +42,18 @@ export default function Dashboard() {
         <div className={styles.content}>
           <div className={styles.toolbar}>
             {error && <div className={styles.error}>{error}</div>}
+            {/* XSS demo removed for safety */}
             {!showForm ? (
               <button
                 className={styles.addBtn}
                 onClick={() => setShowForm(true)}
-                disabled={saving}
+                
               >
                 + Nouveau projet
               </button>
             ) : (
               <ProjectForm
                 submitLabel="Créer"
-                disabled={saving}
                 onSubmit={(name, color) => {
                   addProject(name, color);
                   setShowForm(false);

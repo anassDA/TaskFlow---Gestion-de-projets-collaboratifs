@@ -1,0 +1,47 @@
+Q1 : Combien de lignes de CSS avez-vous écrit pour le Header MUI ? Comparez avec votre Header.module.css.
+
+Header MUI : 0 lignes CSS (tout en sx / props).
+Header.module.css : environ 40 lignes (sélecteurs .header, .left, .menuBtn, .logo, .avatar, .right, .userName, .logoutBtn, etc.).
+Conclusion : MUI évite d’écrire un fichier CSS dédié, tandis que la version CSS Modules nécessite une trentaine/quarantaine de lignes.
+Q2 : Comparez le code du Header MUI vs Bootstrap. Lequel est plus lisible ? Plus court ?
+
+Lisibilité : subjectif. Le Header Bootstrap (HeaderBS.tsx) est très lisible et court grâce aux composants et classes Bootstrap (<Navbar bg="success">), ideal pour ceux qui préfèrent HTML + classes.
+MUI est aussi lisible et cohérent si vous connaissez le pattern sx/Theme, mais peut devenir verbeux si beaucoup de styles sx sont utilisés.
+En longueur, Bootstrap est légèrement plus court (moins de props style), MUI centralise le style dans sx.
+Q3 : Le Login MUI utilise sx={{}} pour le style. Le Login Bootstrap utilise des classes CSS (className). Quel système préférez-vous ? Pourquoi ?
+
+Réponse recommandée : je préfère MUI (sx) si le projet vise une personnalisation fine et un thème cohérent (couleurs, spacing centralisés). sx permet d’avoir tout au même endroit (composant + styles) et d’utiliser le thème.
+Préférence alternative : Bootstrap si on veut prototyper rapidement avec classes utilitaires et garder du CSS léger.
+Raisons : sx facilite l’utilisation du thème et réduit le nombre de fichiers CSS, mais peut augmenter la taille du JSX.
+Q4 : Si vous deviez choisir UNE seule library pour TaskFlow en production, laquelle et pourquoi ?
+
+Recommandation : Material UI.
+Pourquoi : MUI offre un système de theming robuste, composants riches, accessibilité et pièces réutilisables (dialog, tables, inputs, etc.). Pour une application collaborative (TaskFlow) qui nécessite cohérence visuelle et personnalisation, MUI est adapté. Bootstrap est plus léger mais moins “design-system” out-of-the-box.
+Q5 : Pourquoi React ne peut-il PAS se connecter directement à MySQL ?
+
+MySQL est une base de données qui n’expose pas nativement une API HTTP sécurisée pour les navigateurs. Se connecter directement impliquerait exposer les identifiants DB côté client et ouvrir les ports DB vers Internet — très dangereux. De plus, la logique d’authentification, validation et permissions doit être exécutée côté serveur. Donc on place un backend (API) entre React et MySQL.
+Q6 : json-server est parfait pour notre TP. Donnez 3 raisons pour lesquelles on ne l’utiliserait PAS en production.
+
+Pas sécurisé : aucune gestion fine des accès/autorisation, pas d’auth robuste.
+Performance & scalabilité : pas optimisé pour production et pas prévu pour gros trafic.
+Pas de logique serveur : impossible d’implémenter règles métiers complexes, transactions, validations côté serveur.
+Q7 : Firebase permet à React de se connecter directement (pas de backend Express). Comment est-ce possible alors que MySQL ne le permet pas ?
+
+Firebase (Realtime Database / Firestore / Auth) expose une API REST / WebSocket sécurisée et gérée (règles de sécurité, tokens) qui autorise les clients à interagir directement avec la DB via HTTPS/WebSockets. Firebase gère l’auth, les règles d’accès et la sécurité côté service. MySQL n’offre pas ce niveau de contrôle et d’API web sécurisée par défaut.
+Q8 : Votre TaskFlow utilise json-server. Un client vous demande de passer en production avec de vrais utilisateurs. Quelles étapes sont nécessaires ?
+
+Remplacer json-server par un backend réel (Express / Nest / Django / Spring) + base de données (Postgres, MySQL, MongoDB).
+Implémenter authentification sécurisée (JWT/OAuth), gestion des passwords (hash bcrypt), validations et autorisations.
+Déployer backend (serveur cloud), config DNS, SSL, sauvegardes DB, monitoring, tests, mise à l’échelle.
+Migration données de db.json vers la vraie DB.
+CI/CD, tests, et audits sécurité.
+Q9 : MUI et Bootstrap sont des libraries externes. Quel est le risque d’en dépendre ?
+
+Taille du bundle : ajouter une grosse librairie augmente le bundle JS/CSS; attention au temps de chargement.
+Changements/ruptures : mises à jour majeures peuvent casser l’app si breaking changes.
+Dépréciation : si la lib n’est plus maintenue, vous êtes coincés ou devez migrer.
+Q10 : Vous devez créer une app de chat en temps réel. json-server, Firebase ou Backend custom ? Justifiez.
+
+Choix : Backend custom (ex: Node/Express + Socket.IO) 
+Raisons : json-server ne supporte pas temps réel et n’est pas adapté. Firebase Realtime Database / Firestore ou Firebase Cloud Messaging sont très pratiques pour prototypes temps réel (gestion en temps réel incluse). Pour contrôle total, logique métier et évolutivité, un backend custom avec WebSockets (Socket.IO) + DB (Redis pour pub/sub + Mongo/Postgres) est préférable.
+Recommandation pratique : pour MVP rapide → Firebase. Pour production à fort trafic et fonctionnalités spécifiques → backend custom.
