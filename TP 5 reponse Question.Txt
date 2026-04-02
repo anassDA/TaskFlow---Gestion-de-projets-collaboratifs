@@ -1,0 +1,37 @@
+Q1 — Le script s’exécute‑t‑il ? Pourquoi ?
+
+Non. React échappe automatiquement les chaînes placées dans le JSX (affiche du texte brut). Les strings rendues par {dangerousName} sont insérées comme texte (équivalent à innerText), donc le navigateur n’interprète pas <img ...>.
+Q2 — Que se passe‑t‑il avec dangerouslySetInnerHTML ?
+
+Le HTML est injecté tel quel dans le DOM et la protection de React est désactivée : l’attribut onerror s’exécute (alerte). C’est dangereux — ne jamais utiliser dangerouslySetInnerHTML sur des données non assainies. Solution : supprimer l’exemple après le test ou assainir (DOMPurify).
+Q3 — GET /projects : voit‑on le header Authorization ?
+
+Oui si setAuthToken(token) a été appelé. Axios ajoute Authorization: Bearer <token> aux en‑têtes automatiques (api.defaults.headers.common['Authorization'] = 'Bearer ...'), donc dans l’onglet Network la requête aura ce header quand le token est présent.
+Q4 — Pourquoi stocker le token en mémoire (state) et PAS dans localStorage ?
+
+localStorage est accessible à tout script exécuté sur la page (donc vulnérable à XSS). Le state React (ou Redux) garde le token en mémoire JS sans le persister sur disque, réduisant la fenêtre d’exfiltration. Meilleure pratique réelle : utiliser des cookies HttpOnly+Secure (le navigateur gère l’envoi sans exposition côté JS).
+Q5 — Qu’est‑ce qui change entre l’ancien authReducer.ts et authSlice.ts (RTK) ?
+
+RTK : createSlice génère actions + reducer, supprime le switch/case explicite. Les reducers semblent muter l’état (state.user = ...) mais RTK utilise Immer pour produire un nouvel état immuable. Résultat : code plus concis, actions typées automatiquement et ergonomie améliorée.
+Q6 — En toggle sidebar, combien de composants se re‑rendent ? Lesquels ne DEVRAIENT PAS ?
+
+Observé typique : Sidebar se rerend (normal), Header/Dashboard peuvent rerender selon l’état, et parfois MainContent se rerend inutilement. Après optimisation, MainContent NE DEVRAIT PAS se rerender quand seules les props non pertinentes changent (p.ex. sidebarOpen).
+Q7 — Pourquoi MainContent ne se re‑rend plus après React.memo ? Que compare React.memo ?
+
+React.memo effectue une comparaison superficielle (shallow) des props précédentes vs nouvelles. Si les props (références) sont identiques, React évite le rerender. Donc MainContent ne rerend plus si columns est la même référence.
+Q8 — Différence entre useMemo et useCallback ? Quand utiliser ?
+
+useMemo(fn, deps) memoize une valeur de retour (résultat d’un calcul).
+useCallback(fn, deps) memoize une fonction (retourne la même référence de fonction).
+Utiliser useMemo pour mettre en cache un calcul coûteux ; useCallback pour passer une fonction avec référence stable (éviter rerenders des composants memoisés ou re‑création d’effets dépendants).
+Q9 — (non listée explicitement dans l’énoncé)
+
+Si tu as une Q9 précise dans le sujet original, colle‑la et je réponds.
+Q10 — Profiler : que noter pour chaque action (a→d) ? Comment comparer avant/après ?
+
+Méthode : ouvrir Profiler, Record, effectuer l’action, Stop, puis inspecter la flamme et la table. Pour chaque action note : composants re‑rendus, durée totale du commit, et durée par composant.
+a) Toggle sidebar : avant optimisations souvent MainContent + Sidebar + Header rerender ; après React.memo normalement seul Sidebar (et éventuellement Header) rerend.
+b) Ajouter projet : Dashboard + Sidebar + MainContent rerendent (ils reçoivent/affichent la nouvelle donnée). Vérifier coût du rerender du board.
+c) Naviguer vers ProjectDetail : route change provoque remount/rerender des pages — mesurer temps de navigation et composants reconstruits.
+d) Se déconnecter : Header, ProtectedRoute et pages liées rerendent ; vérifier qu’il n’y a pas de rerenders inutiles en cascade.
+Mesures à relever : nombre de composants re‑rendus (Profiler → “Ranked” view), temps moyen/total du commit (ms). Après optimisations : réduire le nombre de composants et le temps total pour les actions fréquentes (toggle).
