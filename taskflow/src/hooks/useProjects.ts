@@ -23,7 +23,7 @@ export default function useProjects() {
         setColumns(colRes.data);
       } catch {
         setError('Erreur chargement');
-      } finally {
+      } finally {.
         setLoading(false);
       }
     }
@@ -66,3 +66,5 @@ export default function useProjects() {
 
   return { projects, columns, loading, error, addProject, renameProject, deleteProject };
 }
+
+

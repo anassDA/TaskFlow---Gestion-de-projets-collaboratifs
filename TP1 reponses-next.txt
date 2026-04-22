@@ -1,0 +1,95 @@
+Q1 : Différences React (Vite) vs Next.js
+React (Vite)
+Structure centrée sur src/
+Routing géré dans le code (App.tsx + react-router-dom)
+Tout est côté client (CSR)
+Next.js
+Structure basée sur app/
+Routing basé sur les dossiers (file-based routing)
+Support Server Components (SSR)
+ Différence  :
+React = routing programmation
+Next.js = routing structure des fichiers
+ Q2 : Nombre de fichiers pour /login
+Next.js : 1 seul fichier
+ app/login/page.tsx
+React Router :
+1 composant
+1 route dans App.tsx
+1 import
+Next.js est beaucoup plus simple et rapide
+ Q3 : Récupération de l’id
+React : useParams() (hook client)
+Next.js : params passé en props depuis le serveur
+Différence fondamentale :
+React = côté client
+Next.js = côté serveur (SSR)
+ Q5 : Nombre de lignes pour fetch
+React SPA :
+useState
+useEffect
+fetch
+setState
+loading
+ Q6 : Requête visible dans Network ?
+Non
+Pourquoi ?
+ Le fetch est exécuté côté serveur (Next.js)
+ Le navigateur reçoit déjà le HTML final
+Q7 : Pourquoi 'use client' dans Login ?
+Login utilise :
+useState
+onSubmit
+onChange
+Donc besoin du client
+Dashboard :
+seulement affichage + fetch serveur
+donc Server Component
+ Q8 : Équivalent de useNavigate
+ useRouter() (Next.js)
+const router = useRouter();
+router.push('/dashboard');
+Q9 : View Source React
+ On voit :
+<div id="root"></div>
+<script>...</script>
+Aucun contenu réel (pas de projets)
+ Q10 : View Source Next.js
+ On voit :
+HTML complet
+Liste des projets visible
+ Les données sont déjà dans la page
+C’est le SSR (Server-Side Rendering)
+ Q11 : Header persistant en React
+ On faisait :
+<Header />
+<Routes>
+ Header placé en dehors des routes
+Q12 : Layout spécifique Dashboard
+ Créer :
+
+app/dashboard/layout.tsx
+ Layout uniquement pour /dashboard
+ Q13 : Server Component peut-il utiliser onClick ?
+ Non
+Pourquoi ?
+exécuté côté serveur
+pas d’interactivité
+onClick = côté client uniquement
+ Q14 : Ajouter bouton “+ Nouveau projet”
+ NON, pas besoin de convertir toute la page
+ Solution :
+créer un petit Client Component
+l’importer dans le Server Component
+ Bonne pratique Next.js = mix Server + Client
+ Q15 : Avantage sécurité (fetch côté serveur)
+ Le navigateur ne voit jamais :
+
+http://localhost:4000
+
+✔️ Avantages :
+
+protège API interne
+évite exposition endpoints
+meilleure sécurité
+possibilité d’ajouter auth côté serveu
